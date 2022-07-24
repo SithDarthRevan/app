@@ -1,0 +1,410 @@
+<html>
+
+<head>
+    <script>
+
+        "use strict";
+
+        /*Задание
+        В соревновании по велоспорту участвуют по 4 гонщика из каждой страны.
+        О каждом гонщике известны следующие данные: номер, фамилия, имя, рейтинг.
+        Соревнование проходит в два круга. Первый круг состоит из N этапов.
+        Место страны на этапе определяется по времени худшего (занявшего четвертое место) гонщика этой страны на рассматриваемом этапе.
+        Место страны в итоговом протоколе первого круга определяется по наименьшей сумме мест, занятых страной на этапах,
+        а при равенстве этого показателя – по более высокому месту в итоговом протоколе (в личном зачёте) лучших гонщиков конкурирующих стран.
+        Во второй круг проходит 4 страны имеющие лучший результат. Второй круг проходит в два этапа.
+        Место страны на этапе определяется по времени лучшего (занявшего первое место) гонщика этой страны на рассматриваемом этапе.
+        Место страны в итоговом протоколе второго круга определяется по наименьшей сумме мест, занятых страной на этапах,
+        а при равенстве этого показателя – по средне арифметическому значению рейтинга всех гонщиков страны.
+        
+        Примечание: После проведения первого круга соревнований, должен быть выведен итоговый протокол по гонщикам и по странам.
+        Для проведения второго круга требуется подтверждение пользователя.
+        Затем выводится итоговый протокол по второму кругу и отдельно сообщение о стране-победителе соревнований.*/
+
+
+        class Competition {
+
+            /**
+             * Возвращает participants с результатами первого круга.
+             *
+             * @param {array} stages Количество этапов.
+             * @param {array} participants Массив участников.
+             * @param {array} countries Массив со странами.
+             * @return {array} participants с результатами первого круга.
+             */
+            static getResultsFirstRound(stages, participants, countries) {
+                // Создание массива для хранения результатов участников страны.
+                let countryRezult = [];
+                let randomNumber;
+                for (let i = 0; i < stages; i++) {
+                    for (let j = 0, k = 0, n = 0; j < participants.length; j++) {
+                        randomNumber = Math.floor(Math.random() * 11);
+                        participants[j][3] += randomNumber;
+                        countryRezult[n] = randomNumber;
+                        n++;
+                        if (n == 4) {
+                            // Присваивание в 1 столбец countries минимального результата из countryRezult.
+                            countries[k][1] = Math.min(...countryRezult);
+                            k++;
+                            n = 0;
+                        }
+                    }
+                    // Сортировка стран после каждого этапа и распределение мест.
+                    Competition.getSortStages(countries, participants, 1)
+                    for (let m = 0; m < countries.length; m++) {
+                        countries[m][2] += m + 1;
+                    }
+                }
+                return participants;
+            }
+
+            /**
+            * Возвращает participants с результатами второго круга.
+            *
+            * @param {array} stages Количество этапов, 2 по условию.
+            * @param {array} participants Массив участников.
+            * @param {array} countries Массив со странами.
+            * @return {array} participants с результатами второго круга.
+            */
+            static getResultsSecondRound(stages, participants, countries) {
+                // Создание массива для хранения результатов участников страны.
+                let countryRezult = [];
+                let randomNumber;
+                for (let i = 0; i < stages; i++) {
+                    for (let j = 0, k = 0, n = 0; j < participants.length; j++) {
+                        randomNumber = Math.floor(Math.random() * 11);
+                        participants[j][3] += randomNumber;
+                        countryRezult[n] = randomNumber;
+                        n++;
+                        if (n == 4) {
+                            // Присваивание в 1 столбец countries максимального результата из countryRezult.
+                            countries[k][1] = Math.max(...countryRezult);
+                            k++;
+                            n = 0;
+                        }
+                    }
+                    // Сортировка стран после каждого этапа и распределение мест.
+                    Competition.getSortStages(countries, participants, 1)
+                    for (let m = 0; m < countries.length; m++) {
+                        countries[m][2] += m + 1;
+                    }
+                }
+                return participants;
+            }
+
+            /**
+            * Возвращает countries, сортированный по результатам текущего этапа.
+            * Сортировка - простыми обменами.
+            *
+            * @param {array} countries Массив стран.
+            * @param {array} participants Массив участников.
+            * @param {number} column Столбец массива, по которому происходит сортировка.
+            * @return {array} countries с результатами текущего этапа.
+            */
+            static getSortStages(countries, participants, column) {
+                for (let i = 0, endI = countries.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (countries[j][column] < countries[j + 1][column]) {
+                            let swap = countries[j];
+                            countries[j] = countries[j + 1];
+                            countries[j + 1] = swap;
+                        }
+                    }
+                }
+                // Сортировка участников по странам.
+                for (let i = 0, k = 0; i < countries.length; i++) {
+                    for (let j = 0; j < participants.length; j++) {
+                        if (countries[i][0] == participants[j][1]) {
+                            let swap = participants[j]
+                            participants[j] = participants[k];
+                            participants[k] = swap;
+                            k++;
+                        }
+                    }
+                }
+                return countries;
+            }
+
+            /**
+            * Возвращает countries список стран и сортирует участников по странам.
+            *
+            * @param {array} countries Массив стран.
+            * @param {array} participants Массив участников.
+            * @return {array} countries список стран.
+            */
+            static getSortParticipantsForCountries(countries, participants) {
+                for (let i = 0, k = 0; i < countries.length; i++) {
+                    for (let j = 0; j < participants.length; j++) {
+                        if (countries[i][0] == participants[j][1]) {
+                            let swap = participants[j]
+                            participants[j] = participants[k];
+                            participants[k] = swap;
+                            k++;
+                        }
+                    }
+                }
+                return countries;
+            }
+
+            /**
+            * Возвращает participantsSort (отсортированный список участников).
+            * Сортировка - простыми обменами.
+            *
+            * @param {array} participants Массив участников.
+            * @param {number} column Столбец массива, по которому происходит сортировка.
+            * @return {array} participantsSort (отсортированный список участников).
+            */
+            static getSortParticipants(participants, column) {
+                // Создание независимой копии массива participants.
+                let participantsSort = JSON.parse(JSON.stringify(participants));
+                for (let i = 0, endI = participantsSort.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (participantsSort[j][column] < participantsSort[j + 1][column]) {
+                            let swap = participantsSort[j];
+                            participantsSort[j] = participantsSort[j + 1];
+                            participantsSort[j + 1] = swap;
+                        }
+                    }
+                }
+                return participantsSort;
+            }
+
+            /**
+            * Возвращает countriesSort (отсортированный список стран) первого круга.
+            * Сортировка - простыми обменами.
+            *
+            * @param {array} countries Массив стран.
+            * @param {array} participants Массив участников.
+            * @param {number} column Столбец массива, по которому происходит сортировка.
+            * @return {array} countriesSort (отсортированный список стран) первого круга.
+            */
+            static getSortCountriesFirstRound(countries, participants, column) {
+                // Создание независимой копии массива countries.
+                let countriesSort = JSON.parse(JSON.stringify(countries));
+                for (let i = 0, endI = countriesSort.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (countriesSort[j][column] > countriesSort[j + 1][column]) {
+                            let swap = countriesSort[j];
+                            countriesSort[j] = countriesSort[j + 1];
+                            countriesSort[j + 1] = swap;
+                        }
+                    }
+                }
+                // Сортировка участников по странам после перестановки стран.
+                Competition.getSortParticipantsForCountries(countriesSort, participants);
+                for (let i = 0, endI = countriesSort.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (countriesSort[j][column] == countriesSort[j + 1][column]) {
+                            // Создание массивов для хранения результатов участников сравниваемых стран.
+                            let countryRezultOne = [];
+                            let countryRezultTwo = [];
+                            /* Если результаты стран первого круга равны, то их места 
+                               распределяются в зависимости от результатов их лучших гонщиков. */
+                            for (let k = 0, m = 4 * j; k < 4; k++) {
+                                countryRezultOne[k] = participants[m][3];
+                                countryRezultTwo[k] = participants[m + 4][3];
+                                m++;
+                            }
+                            if (Math.max(...countryRezultOne) < Math.max(...countryRezultTwo)) {
+                                let swap = countriesSort[j];
+                                countriesSort[j] = countriesSort[j + 1];
+                                countriesSort[j + 1] = swap;
+                                // Сортировка участников по странам после перестановки стран.
+                                Competition.getSortParticipantsForCountries(countriesSort, participants);
+                            }
+                        }
+                    }
+                }
+                // Удаление 1 столбца в итоговом протоколе стран.
+                for (let i = 0; i < countriesSort.length; i++) {
+                    countriesSort[i].splice(1, 1);
+                }
+                return countriesSort;
+            }
+
+            /**
+            * Возвращает countriesSort (отсортированный список стран) второго круга.
+            * Сортировка - простыми обменами.
+            *
+            * @param {array} countries Массив стран.
+            * @param {array} participants Массив участников.
+            * @param {number} column Столбец массива, по которому происходит сортировка.
+            * @return {array} countriesSort (отсортированный список стран) второго круга.
+            */
+            static getSortCountriesSecondRound(countries, participants, column) {
+                // Создание независимой копии массива countries.
+                let countriesSort = JSON.parse(JSON.stringify(countries));
+                for (let i = 0, endI = countriesSort.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (countriesSort[j][column] > countriesSort[j + 1][column]) {
+                            let swap = countriesSort[j];
+                            countriesSort[j] = countriesSort[j + 1];
+                            countriesSort[j + 1] = swap;
+                        }
+                    }
+                }
+                // Сортировка участников по странам после перестановки стран.
+                Competition.getSortParticipantsForCountries(countriesSort, participants);
+                for (let i = 0, endI = countriesSort.length - 1; i < endI; i++) {
+                    for (let j = 0, endJ = endI - i; j < endJ; j++) {
+                        if (countriesSort[j][column] == countriesSort[j + 1][column]) {
+                            // Объявление переменных для хранения результатов участников сравниваемых стран.
+                            let sumCountryRezultOne = 0;
+                            let sumCountryRezultTwo = 0;
+                            /* Если результаты стран второго круга равны, то их места распределяются
+                               по средне арифметическому значению рейтинга всех гонщиков страны. */
+                            for (let k = 0, m = 4 * j; k < 4; k++) {
+                                sumCountryRezultOne += participants[m][3];
+                                sumCountryRezultTwo += participants[m + 4][3];
+                                m++;
+                            }
+                            if ((sumCountryRezultOne / 4) < (sumCountryRezultTwo / 4)) {
+                                let swap = countriesSort[j];
+                                countriesSort[j] = countriesSort[j + 1];
+                                countriesSort[j + 1] = swap;
+                                // Сортируем участников по странам после перестановки стран.
+                                Competition.getSortParticipantsForCountries(countriesSort, participants);
+                            }
+                        }
+                    }
+                }
+                // Удаление 1 столбца в итоговом протоколе стран.
+                for (let i = 0; i < countriesSort.length; i++) {
+                    countriesSort[i].splice(1, 1);
+                }
+                return countriesSort;
+            }
+        }
+
+        /* Массив со странами.
+           0 столбец - название страны;
+           1 столбец - хранит min или max результат участников страны;
+           2 столбец - результат страны, зависит от 1 столбца. */
+        let countries = [
+            ["Canada", 0, 0],
+            ["Switzerland", 0, 0],
+            ["Denmark", 0, 0],
+            ["Australia", 0, 0],
+            ["Netherlands", 0, 0],
+            ["Germany", 0, 0],
+            ["Finland", 0, 0],
+            ["Austria", 0, 0],
+            ["Iceland", 0, 0],
+            ["Norway", 0, 0]
+        ];
+
+        /* Массив с участниками.
+           0 столбец - имя и фамилия участника;
+           1 столбец - страна участника;
+           2 столбец - номер участника;
+           3 столбец - результат участника. */
+        let participants = [
+            ["Blake Eaton", "Canada", "1", 0],
+            ["Evan Meyer", "Canada", "2", 0],
+            ["Ryan Fletcher", "Canada", "3", 0],
+            ["Eric Lake", "Canada", "4", 0],
+            ["Sandro Heiniger", "Switzerland", "5", 0],
+            ["Hansueli Waser", "Switzerland", "6", 0],
+            ["Raphael Keller", "Switzerland", "7", 0],
+            ["Chris Ziswiler", "Switzerland", "8", 0],
+            ["Svend Therkildsen", "Denmark", "9", 0],
+            ["Mathias Dahl", "Denmark", "10", 0],
+            ["Henrik Bagge", "Denmark", "11", 0],
+            ["Bertram Lund", "Denmark", "12", 0],
+            ["Michael Foster", "Australia", "13", 0],
+            ["Daniel Turner", "Australia", "14", 0],
+            ["Harley Richardson", "Australia", "15", 0],
+            ["Levi Kidman", "Australia", "16", 0],
+            ["Bert Christiaens", "Netherlands", "17", 0],
+            ["Mark Van Der Ven", "Netherlands", "18", 0],
+            ["Bruno Kuiper", "Netherlands", "19", 0],
+            ["Guido Van Der Horst", "Netherlands", "20", 0],
+            ["Edmund Fuhrmann", "Germany", "21", 0],
+            ["Johannes Heinrich", "Germany", "22", 0],
+            ["Dominic Seidel", "Germany", "23", 0],
+            ["David Kolbe", "Germany", "24", 0],
+            ["Alvar Kivinen", "Finland", "25", 0],
+            ["Siimon Jokinen", "Finland", "26", 0],
+            ["Paul Tuominen", "Finland", "27", 0],
+            ["Aatos Hannula", "Finland", "28", 0],
+            ["Niklas Nalder", "Austria", "29", 0],
+            ["Luka Schell", "Austria", "30", 0],
+            ["Valentin Spielmann", "Austria", "31", 0],
+            ["Lorenz Weber", "Austria", "32", 0],
+            ["Ingvar Einarsson", "Iceland", "33", 0],
+            ["Sveinn Helgason", "Iceland", "34", 0],
+            ["Einar Hjartarson", "Iceland", "35", 0],
+            ["Ari Helgason", "Iceland", "36", 0],
+            ["Magne Andreasen", "Norway", "37", 0],
+            ["Joakim Rosdahl", "Norway", "38", 0],
+            ["Ali Ostby", "Norway", "39", 0],
+            ["Ottar Naess", "Norway", "40", 0]
+        ];
+
+        let stages = +prompt("Введите количество этапов первого круга");
+        if (!parseInt(stages) || stages < 1) {
+            throw "Некорректный ввод данных, завершение программы.";
+        }
+        if (stages > 100000) {
+            throw `Вы ввели слишком большое количество этапов.
+                   Значение не должно превышать 100000. Завершение программы.`;
+        }
+
+        // Вывод итоговых протоколов первого круга.
+        Competition.getResultsFirstRound(stages, participants, countries);
+        console.log("Итоговый протокол участников первого круга (Имя, Страна, Номер, Результат):");
+        console.log(Competition.getSortParticipants(participants, 3));
+        console.log("\nИтоговый протокол стран первого круга (Страна, Результат):");
+        console.log(Competition.getSortCountriesFirstRound(countries, participants, 2));
+        //.........................................................................................//
+
+        while (true) {
+            let choiceSecondRound = +prompt(`Введите 1 для проведения второго круга соревнований`);
+            if (!parseInt(choiceSecondRound) || choiceSecondRound != 1) {
+                throw "Завершение программы.";
+            }
+            // Подготовка массивов ко второму кругу соревнований.
+            if (choiceSecondRound == 1) {
+                let countries2 = JSON.parse(JSON.stringify(Competition.getSortCountriesFirstRound(countries, participants, 2)));
+                // Во второй круг проходят 4 страны, имеющие лучший результат.
+                countries2.length = 4;
+                // Обнуление результатов предыдущего круга.
+                for (let i = 0; i < countries2.length; i++) {
+                    countries2[i][1] = 0;
+                    countries2[i][2] = 0;
+                }
+                // Запись участников лучших стран.
+                let participants2 = [];
+                for (let i = 0, k = 0; i < 4; i++) {
+                    for (let j = 0; j < participants.length; j++) {
+                        if (countries2[i][0] == participants[j][1]) {
+                            participants2[k] = participants[j];
+                            // Обнуление результатов участников предыдущего круга
+                            participants2[k][3] = 0;
+                            k++;
+                        }
+                    }
+                }
+                // Вывод итоговых протоколов второго круга.
+                // Во втором круге 2 этапа, по условию.
+                Competition.getResultsSecondRound(2, participants2, countries2);
+                console.log("\n\n\nИтоговый протокол участников второго круга (Имя, Страна, Номер, Результат):");
+                console.log(Competition.getSortParticipants(participants2, 3));
+                console.log("\nИтоговый протокол стран второго круга (Страна, Результат):");
+                console.log(Competition.getSortCountriesSecondRound(countries2, participants2, 2));
+                let countryWinner = Competition.getSortCountriesSecondRound(countries2, participants2, 2)[0][0];
+                alert("\nПобедитель соревнований - страна " + countryWinner);
+                console.log("\nПобедитель соревнований - страна " + countryWinner);
+                break;
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <h1>Демодень 2</h1>
+    <p>30 июля 2022 года</p>
+</body>
+
+</html>
