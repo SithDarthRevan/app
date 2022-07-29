@@ -27,7 +27,7 @@
             /**
              * Возвращает participants с результатами первого круга.
              *
-             * @param {array} stages Количество этапов.
+             * @param {number} stages Количество этапов.
              * @param {array} participants Массив участников.
              * @param {array} countries Массив со странами.
              * @return {array} participants с результатами первого круга.
@@ -50,7 +50,7 @@
                         }
                     }
                     // Сортировка стран после каждого этапа и распределение мест.
-                    Competition.getSortStages(countries, participants, 1)
+                    Competition.getSortStages(countries, participants, 1);
                     for (let m = 0; m < countries.length; m++) {
                         countries[m][2] += m + 1;
                     }
@@ -61,7 +61,7 @@
             /**
             * Возвращает participants с результатами второго круга.
             *
-            * @param {array} stages Количество этапов, 2 по условию.
+            * @param {number} stages Количество этапов, 2 по условию.
             * @param {array} participants Массив участников.
             * @param {array} countries Массив со странами.
             * @return {array} participants с результатами второго круга.
@@ -84,7 +84,7 @@
                         }
                     }
                     // Сортировка стран после каждого этапа и распределение мест.
-                    Competition.getSortStages(countries, participants, 1)
+                    Competition.getSortStages(countries, participants, 1);
                     for (let m = 0; m < countries.length; m++) {
                         countries[m][2] += m + 1;
                     }
@@ -115,7 +115,7 @@
                 for (let i = 0, k = 0; i < countries.length; i++) {
                     for (let j = 0; j < participants.length; j++) {
                         if (countries[i][0] == participants[j][1]) {
-                            let swap = participants[j]
+                            let swap = participants[j];
                             participants[j] = participants[k];
                             participants[k] = swap;
                             k++;
@@ -136,7 +136,7 @@
                 for (let i = 0, k = 0; i < countries.length; i++) {
                     for (let j = 0; j < participants.length; j++) {
                         if (countries[i][0] == participants[j][1]) {
-                            let swap = participants[j]
+                            let swap = participants[j];
                             participants[j] = participants[k];
                             participants[k] = swap;
                             k++;
